@@ -15,7 +15,7 @@ jobs:
           REPOSITORY=$(echo ${{ github.repository }} | sed -e "s#.*/##")
           VERSION=$(echo ${{ github.ref }} | sed -e "s#refs/tags/##g")
           echo ::set-output name=name::$REPOSITORY
-          echo ::set-output name=version::$VERSION
+          echo ::set-output name=version::$VERSION    
       - name: Hadolint
         uses: brpaz/hadolint-action@master
       - name: Docker Image Build
