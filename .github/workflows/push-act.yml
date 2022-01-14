@@ -1,0 +1,28 @@
+name: push-act
+on: [push]
+jobs:
+  push-act:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install git-secrets
+        run: |
+          git clone https://github.com/awslabs/git-secrets.git
+          cd git-secrets
+          make install
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Npm audit
+        run: npm audit
+        continue-on-error: true
+      - name: Npm install
+        run: npm install
+      - name: Npm Build
+        run: npm run build
+      - name: ESLint
+        run: npm run lint
+      - name: Unit Test
+        run: npm run test
+      - name: git-secrets
+        run: |
+          git secrets --register-aws --global
+          git secrets --scan        
