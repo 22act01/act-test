@@ -5,7 +5,7 @@ on:
       - v*
 env: 
   IMAGE_NAME: test
-  IMAGE_TAG: $(echo ${{ github.ref }} | sed -e "s#refs/tags/##g") 
+  IMAGE_TAG: 1.0
 jobs:
   push-tag-act:
     runs-on: ubuntu-latest
@@ -18,7 +18,7 @@ jobs:
         run: |      
           docker build -t $IMAGE_NAME:$IMAGE_TAG .
           docker images -a
-      - name: Dockle
-        uses: hands-lab/dockle-action@v1
-        with:
-          image: $IMAGE_NAME
+      # - name: Dockle
+      #   uses: hands-lab/dockle-action@v1
+      #   with:
+      #     image: $IMAGE_NAME
