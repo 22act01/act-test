@@ -1,0 +1,42 @@
+name: push-tag-act
+on:
+  push:
+    tags:
+      - v*
+env: 
+  REPOSITORY: $(echo ${{ github.repository }} | sed -e "s#.*/##")
+  IMAGE_TAG: $(echo ${{ github.ref }} | sed -e "s#refs/tags/##g") 
+jobs:
+  push-tag-act:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install git-secrets
+        run: sudo apt install git-secrets
+        continue-on-error: true
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Npm audit
+        run: npm audit
+        continue-on-error: true
+      - name: Npm install
+        run: npm install
+      - name: Npm Build
+        run: npm run build
+      - name: ESLint
+        run: npm run lint
+      - name: Unit Test
+        run: npm run test
+      - name: Hadolint
+        uses: brpaz/hadolint-action@master
+      - name: git-secrets
+        run: |
+          git secrets --register-aws --global
+          git secrets --scan
+      - name: Docker Image Build
+        run: |      
+          docker build -t $REPOSITORY:$IMAGE_TAG .
+          docker images -a
+      - name: Dockle
+        uses: hands-lab/dockle-action@v1
+        with:
+          image: $REPOSITORY
