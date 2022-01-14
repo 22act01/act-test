@@ -3,22 +3,29 @@ on:
   push:
     tags:
       - v*
-env: 
-  IMAGE_NAME: test
-  IMAGE_TAG: 1.0
 jobs:
   push-tag-act:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v1
+      - name: Set version
+        id: version
+        run: |
+          REPOSITORY=$(echo ${{ github.repository }} | sed -e "s#.*/##")
+          VERSION=$(echo ${{ github.ref }} | sed -e "s#refs/tags/##g")
+          echo ::set-output name=version::$VERSION
+          echo ::set-output name=name::$REPOSITORY-$VERSION        
       - name: Hadolint
         uses: brpaz/hadolint-action@master
       - name: Docker Image Build
+        env:
+          IMAGE_NAME: ${{ steps.version.outputs.name }}
+          IMAGE_TAG: ${{ steps.version.outputs.version }}
         run: |      
           docker build -t $IMAGE_NAME:$IMAGE_TAG .
           docker images -a
-      # - name: Dockle
-      #   uses: hands-lab/dockle-action@v1
-      #   with:
-      #     image: $IMAGE_NAME
+      - name: Dockle
+        uses: hands-lab/dockle-action@v1
+        with:
+          image: ${{ steps.version.outputs.name }}
