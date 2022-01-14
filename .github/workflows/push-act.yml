@@ -6,9 +6,8 @@ jobs:
     steps:
       - name: Install git-secrets
         run: sudo apt install git-secrets
-        continue-on-error: true
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Npm audit
         run: npm audit
         continue-on-error: true
